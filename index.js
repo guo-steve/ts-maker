@@ -4,13 +4,13 @@ const fs = require("fs");
 const { execSync } = require("child_process");
 const prompts = require("prompts");
 
-(async () => {
-  const response = await prompts(
+async function main() {
+  let answers = await prompts(
     [
       {
         type: "text",
         name: "projectName",
-        message: "What is your project name?",
+        message: "What is your project name? [empty]",
       },
     ],
     {
@@ -20,47 +20,49 @@ const prompts = require("prompts");
       },
     }
   );
-  console.log(response);
-})();
 
-if (!fs.existsSync("package.json")) {
-  execSync("npm init -y");
-}
+  if (answers.projectName) {
+    execSync(`mkdir ${answers.projectName}`);
+    process.chdir(answers.projectName);
+  }
 
-const cmds = {
-  install_typescript: "npm install --save-dev typescript @types/node ts-node",
-  install_eslint:
-    "npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-import",
-  set_scripts_lint: 'npm pkg set scripts.lint="eslint --fix src"',
-};
+  if (!fs.existsSync("package.json")) {
+    execSync("npm init -y");
+  }
 
-execSync(cmds.install_typescript);
-execSync(cmds.install_eslint);
-execSync(cmds.set_scripts_lint);
+  const cmds = {
+    install_typescript: "npm install --save-dev typescript @types/node ts-node",
+    install_eslint:
+      "npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-import",
+    set_scripts_lint: 'npm pkg set scripts.lint="eslint --fix src"',
+  };
 
-const filesToCopy = [
-  ".dockerignore",
-  ".editorconfig",
-  ".eslintrc.json",
-  ".gitignore",
-  ".prettierrc.json",
-  "tsconfig.json",
-];
+  execSync(cmds.install_typescript);
+  execSync(cmds.install_eslint);
+  execSync(cmds.set_scripts_lint);
 
-filesToCopy.forEach((file) => {
-  fs.copyFileSync(__dirname + "/files/" + file, process.cwd() + "/" + file);
-});
+  const filesToCopy = [
+    ".dockerignore",
+    ".editorconfig",
+    ".eslintrc.json",
+    ".gitignore",
+    ".prettierrc.json",
+    "tsconfig.json",
+  ];
 
-if (!fs.existsSync("src")) {
-  fs.mkdirSync("src");
-}
+  filesToCopy.forEach((file) => {
+    fs.copyFileSync(__dirname + "/files/" + file, process.cwd() + "/" + file);
+  });
 
-if (!fs.existsSync(".git")) {
-  execSync("git init");
-}
+  if (!fs.existsSync("src")) {
+    fs.mkdirSync("src");
+  }
 
-(async () => {
-  const answers = await prompts({
+  if (!fs.existsSync(".git")) {
+    execSync("git init");
+  }
+
+  answers = await prompts({
     type: "confirm",
     name: "useHusky",
     message: "Would you like to install husky (recommended)?",
@@ -77,4 +79,6 @@ if (!fs.existsSync(".git")) {
     );
     execSync('npx husky add .husky/pre-commit "npx lint-staged"');
   }
-})();
+}
+
+main();
