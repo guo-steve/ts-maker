@@ -1,8 +1,30 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const { execSync } = require("child_process");
+const { spawn } = require("child_process");
 const prompts = require("prompts");
+
+async function exec(cmd, args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args);
+
+    child.stdout.on("data", (data) => {
+      process.stdout.write(data);
+    });
+
+    child.stderr.on("data", (data) => {
+      process.stderr.write(data);
+    });
+
+    child.on("exit", (code) => {
+      if (code !== 0) {
+        reject();
+        return;
+      }
+      resolve();
+    });
+  });
+}
 
 async function main() {
   let answers = await prompts(
@@ -22,24 +44,33 @@ async function main() {
   );
 
   if (answers.projectName) {
-    execSync(`mkdir ${answers.projectName}`);
+    fs.mkdirSync(answers.projectName);
     process.chdir(answers.projectName);
   }
 
   if (!fs.existsSync("package.json")) {
-    execSync("npm init -y");
+    await exec("npm", ["init", "-y"]);
   }
 
-  const cmds = {
-    install_typescript: "npm install --save-dev typescript @types/node ts-node",
-    install_eslint:
-      "npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-import",
-    set_scripts_lint: 'npm pkg set scripts.lint="eslint --fix src"',
-  };
-
-  execSync(cmds.install_typescript);
-  execSync(cmds.install_eslint);
-  execSync(cmds.set_scripts_lint);
+  // npm install --save-dev typescript @types/node ts-node
+  await exec("npm", [
+    "install",
+    "--save-dev",
+    "typescript",
+    "@types/node",
+    "ts-node",
+  ]);
+  // npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-import
+  await exec("npm", [
+    "install",
+    "--save-dev",
+    "eslint",
+    "@typescript-eslint/parser",
+    "@typescript-eslint/eslint-plugin",
+    "eslint-plugin-import",
+  ]);
+  // npm pkg set scripts.lint="eslint --fix src"
+  await exec("npm", ["pkg", "set", "scripts.lint", "eslint --fix src"]);
 
   const filesToCopy = [
     ".dockerignore",
@@ -59,7 +90,7 @@ async function main() {
   }
 
   if (!fs.existsSync(".git")) {
-    execSync("git init");
+    await exec("git", ["init"]);
   }
 
   answers = await prompts({
@@ -70,14 +101,13 @@ async function main() {
   });
 
   if (answers.useHusky) {
-    execSync("npm install --save-dev husky lint-staged");
-    execSync("npx husky install");
+    await exec("npm", ["install", "--save-dev", "husky", "lint-staged"]);
+    await exec("npx", ["husky", "install"]);
     fs.copyFileSync(
       __dirname + "files/.lintstagedrc.json",
-      file,
       process.cwd() + "/.lintstagedrc.json"
     );
-    execSync('npx husky add .husky/pre-commit "npx lint-staged"');
+    await exec("npx", ["husky", "add", ".husky/pre-commit", "npx lint-staged"]);
   }
 }
 
