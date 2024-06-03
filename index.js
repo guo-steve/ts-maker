@@ -4,9 +4,9 @@ const fs = require("fs");
 const { spawn } = require("child_process");
 const prompts = require("prompts");
 
-async function exec(cmd, args) {
+async function exec(cmd, args, options = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args);
+    const child = spawn(cmd, args, options);
 
     child.stdout.on("data", (data) => {
       process.stdout.write(data);
@@ -16,9 +16,13 @@ async function exec(cmd, args) {
       process.stderr.write(data);
     });
 
+    child.on("error", (err) => {
+      reject(err);
+    });
+
     child.on("exit", (code) => {
       if (code !== 0) {
-        reject();
+        reject(new Error(`Process exited with code ${code}`));
         return;
       }
       resolve();
@@ -70,7 +74,7 @@ async function main() {
     "eslint-plugin-import",
   ]);
   // npm pkg set scripts.lint="eslint --fix src"
-  await exec("npm", ["pkg", "set", "scripts.lint", "eslint --fix src"]);
+  await exec("npm", ["pkg", "set", "scripts.lint='eslint --fix src'"]);
 
   const filesToCopy = [
     ".dockerignore",
@@ -102,12 +106,11 @@ async function main() {
 
   if (answers.useHusky) {
     await exec("npm", ["install", "--save-dev", "husky", "lint-staged"]);
-    await exec("npx", ["husky", "install"]);
+    await exec("npx", ["husky', 'init"], { shell: true });
     fs.copyFileSync(
-      __dirname + "files/.lintstagedrc.json",
+      __dirname + "/files/.lintstagedrc.json",
       process.cwd() + "/.lintstagedrc.json"
     );
-    await exec("npx", ["husky", "add", ".husky/pre-commit", "npx lint-staged"]);
   }
 }
 
