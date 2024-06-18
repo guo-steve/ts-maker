@@ -9,6 +9,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guo-steve/ts-starter.git"
+  },
   "dependencies": {
     "prompts": "^2.4.2"
   }
