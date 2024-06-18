@@ -2,19 +2,24 @@
 
 const fs = require("fs");
 const { spawn } = require("child_process");
+const { parseArgs } = require("util");
 const prompts = require("prompts");
 
 async function exec(cmd, args, options = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, options);
+    const child = spawn(cmd, args, {
+      stdio: ["inherit", "pipe", "inherit"],
+      ...options,
+    });
 
     child.stdout.on("data", (data) => {
       process.stdout.write(data);
     });
 
-    child.stderr.on("data", (data) => {
-      process.stderr.write(data);
-    });
+    child.stderr &&
+      child.stderr.on("data", (data) => {
+        process.stderr.write(data);
+      });
 
     child.on("error", (err) => {
       reject(err);
@@ -31,25 +36,50 @@ async function exec(cmd, args, options = {}) {
 }
 
 async function main() {
-  let answers = await prompts(
-    [
-      {
-        type: "text",
-        name: "projectName",
-        message: "What is your project name? [empty]",
-      },
-    ],
-    {
-      onCancel: () => {
-        console.log("Bye!");
-        process.exit(0);
-      },
-    }
-  );
+  let projectName;
 
-  if (answers.projectName) {
-    fs.mkdirSync(answers.projectName);
-    process.chdir(answers.projectName);
+  const { values, positionals } = parseArgs({
+    options: {
+      help: {
+        type: "boolean",
+        short: "h",
+      },
+    },
+    allowPositionals: true,
+  });
+
+  if (values.help) {
+    console.log("Usage: ts-starter [project-name]");
+    process.exit(0);
+  }
+
+  if (positionals.length > 0) {
+    projectName = positionals[0];
+  } else {
+    const answers = await prompts(
+      [
+        {
+          type: "text",
+          name: "projectName",
+          message: "What is your project name? [empty]",
+        },
+      ],
+      {
+        onCancel: () => {
+          console.log("Bye!");
+          process.exit(0);
+        },
+      }
+    );
+
+    projectName = answers.projectName;
+  }
+
+  if (projectName) {
+    if (!fs.existsSync(projectName)) {
+      fs.mkdirSync(projectName);
+    }
+    process.chdir(projectName);
   }
 
   if (!fs.existsSync("package.json")) {
@@ -106,7 +136,7 @@ async function main() {
 
   if (answers.useHusky) {
     await exec("npm", ["install", "--save-dev", "husky", "lint-staged"]);
-    await exec("npx", ["husky', 'init"], { shell: true });
+    await exec("npx", ["husky", "init"]);
     fs.copyFileSync(
       __dirname + "/files/.lintstagedrc.json",
       process.cwd() + "/.lintstagedrc.json"
