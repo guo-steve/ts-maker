@@ -50,7 +50,7 @@ async function main() {
 
   if (values.help) {
     console.log("Usage: ts-starter [project-name]");
-    process.exit(0);
+    process.exit(1);
   }
 
   if (positionals.length > 0) {
@@ -146,4 +146,6 @@ async function main() {
 
 module.exports.main = main;
 
-main();
+if (require.main === module) {
+  main();
+}
