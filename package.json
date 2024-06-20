@@ -1,5 +1,5 @@
 {
-  "name": "@buildpeak/ts-starter",
+  "name": "ts-maker",
   "version": "1.0.4",
   "description": "## TypeScript Starter",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/guo-steve/ts-starter.git"
+    "url": "git+https://github.com/guo-steve/ts-maker.git"
   },
   "dependencies": {
     "prompts": "^2.4.2"
