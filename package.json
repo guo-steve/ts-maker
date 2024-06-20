@@ -1,5 +1,5 @@
 {
-  "name": "ts-maker",
+  "name": "@buildpeak/ts-maker",
   "version": "1.0.6",
   "description": "## TypeScript Starter",
   "main": "index.js",
