@@ -1,5 +1,5 @@
 {
-  "name": "ts-starter",
+  "name": "@buildpeak/ts-starter",
   "version": "1.0.2",
   "description": "## TypeScript Starter",
   "main": "index.js",
