@@ -9,11 +9,17 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/guo-steve/ts-maker.git"
   },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "files/"
+  ],
   "bin": {
     "@buildpeak/ts-maker": "./index.js"
   },
