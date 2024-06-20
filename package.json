@@ -4,6 +4,7 @@
   "description": "## TypeScript Starter",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "jest"
   },
   "keywords": [],
@@ -12,6 +13,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/guo-steve/ts-maker.git"
+  },
+  "bin": {
+    "@buildpeak/ts-maker": "./index.js"
   },
   "dependencies": {
     "prompts": "^2.4.2"
