@@ -18,8 +18,7 @@
     "LICENSE",
     "README.md",
     "index.js",
-    "files/",
-    "files/.gitignore"
+    "files/"
   ],
   "bin": {
     "@buildpeak/ts-maker": "./index.js"

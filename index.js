@@ -110,13 +110,18 @@ async function main() {
     ".dockerignore",
     ".editorconfig",
     ".eslintrc.json",
-    ".gitignore",
+    "_.gitignore",
     ".prettierrc.json",
     "tsconfig.json",
   ];
 
   filesToCopy.forEach((file) => {
-    fs.copyFileSync(__dirname + "/files/" + file, process.cwd() + "/" + file);
+    let from = file;
+    let to = file;
+    if (from.startsWith("_.")) {
+      to = to.replace(/^_\./, ".");
+    }
+    fs.copyFileSync(__dirname + "/files/" + from, process.cwd() + "/" + to);
   });
 
   if (!fs.existsSync("src")) {
