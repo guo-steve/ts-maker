@@ -15,6 +15,10 @@ This is a starter project for TypeScript. It includes:
 
 ## How to use
 
+```bash
+npx @guo-steve/ts-maker .
+```
+
 ## File list
 
 - .dockerignore
