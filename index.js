@@ -96,14 +96,14 @@ async function main() {
     "@types/node",
     "ts-node",
   ]);
-  // npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-import
+  // npm install --save-dev eslint @eslint/js typescript typescript-eslint
   await exec("npm", [
     "install",
     "--save-dev",
     "eslint",
-    "@typescript-eslint/parser",
-    "@typescript-eslint/eslint-plugin",
-    "eslint-plugin-import",
+    "@eslint/js",
+    "typescript",
+    "typescript-eslint",
   ]);
   // npm pkg set scripts.lint="eslint --fix src"
   await exec("npm", ["pkg", "set", "scripts.lint='eslint --fix src'"]);
