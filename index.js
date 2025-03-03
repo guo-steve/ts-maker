@@ -100,10 +100,10 @@ async function main() {
   await exec("npm", [
     "install",
     "--save-dev",
+    "--legacy-peer-deps",
     "eslint",
-    "@eslint/js",
-    "typescript",
-    "typescript-eslint",
+    "@typescript-eslint/parser",
+    "@typescript-eslint/eslint-plugin",
   ]);
   // npm pkg set scripts.lint="eslint --fix src"
   await exec("npm", ["pkg", "set", "scripts.lint='eslint --fix src'"]);
