@@ -27,7 +27,7 @@ async function exec(cmd, args, options = {}) {
 
     child.on("exit", (code) => {
       if (code !== 0) {
-        reject(new Error(`Process exited with code ${code}`));
+        reject(new Error(`Process exited with code ${code}: cmd=${cmd} args=${JSON.stringify(args)}`));
         return;
       }
       resolve();
